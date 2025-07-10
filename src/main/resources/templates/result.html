@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>睡眠分析结果</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        h2 {
+            color: #333;
+        }
+        .result {
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .good {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .bad {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        img {
+            max-width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        a:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>睡眠分析结果</h1>
+    
+    <div class="result" th:class="${isSleepEnough} ? 'good' : 'bad'">
+        <h2 th:if="${isSleepEnough}">睡眠充足</h2>
+        <h2 th:if="${!isSleepEnough}">睡眠不足</h2>
+        <p th:if="${isSleepEnough}">根据分析，您的睡眠质量良好，请继续保持。</p>
+        <p th:if="${!isSleepEnough}">根据分析，您可能睡眠不足，建议保证充足的休息。</p>
+    </div>
+    
+    <div>
+        <h3>分析的照片</h3>
+        <img th:src="@{|/uploads/${imagePath}|}" alt="分析的照片">
+    </div>
+    
+    <a href="/">返回拍照</a>
+</body>
+</html>    

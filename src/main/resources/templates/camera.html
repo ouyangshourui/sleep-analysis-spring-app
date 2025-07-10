@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>睡眠分析 - 拍照</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        video, canvas {
+            border: 1px solid #ccc;
+            margin: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #error {
+            color: red;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>睡眠分析系统</h1>
+    
+    <div id="error" th:if="${error}" th:text="${error}"></div>
+    
+    <div>
+        <video id="video" width="640" height="480" autoplay></video>
+        <canvas id="canvas" width="640" height="480" style="display: none;"></canvas>
+    </div>
+    
+    <div>
+        <button id="captureBtn">拍照</button>
+        <form id="uploadForm" method="post" enctype="multipart/form-data" action="/analyze" style="display: none;">
+            <input type="file" id="imageInput" name="image" required>
+            <button type="submit">分析睡眠质量</button>
+        </form>
+    </div>
+    
+    <script>
+        // 获取DOM元素
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const captureBtn = document.getElementById('captureBtn');
+        const uploadForm = document.getElementById('uploadForm');
+        const imageInput = document.getElementById('imageInput');
+        
+        // 访问摄像头
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                video.srcObject = stream;
+            })
+            .catch(err => {
+                console.error('访问摄像头时出错:', err);
+                alert('无法访问摄像头，请确保您已授予摄像头权限');
+            });
+        
+        // 拍照功能
+        captureBtn.addEventListener('click', () => {
+            const ctx = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            // 将Canvas转换为Blob并设置为文件输入
+            canvas.toBlob(blob => {
+                const file = new File([blob], 'snapshot.jpg', { type: 'image/jpeg' });
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                imageInput.files = dataTransfer.files;
+                
+                // 显示上传表单，隐藏拍照按钮和视频
+                uploadForm.style.display = 'block';
+                captureBtn.style.display = 'none';
+                video.style.display = 'none';
+                canvas.style.display = 'block';
+            }, 'image/jpeg');
+        });
+    </script>
+</body>
+</html>    
